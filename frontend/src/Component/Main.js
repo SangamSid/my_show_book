@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useCallback } from 'react'
 import { moviesList, slots, seats } from '../data';
 import axios from "axios"
 import LastBookingDetail from './LastBookingDetail';
 import MovieBooking from './MovieBooking';
 import TimeBooking from './TimeBooking';
 import SeatBooking from './SeatBooking';
+import Toast from './Toast';
+
+
 
 const Main = () => {
   let initialSeat = {
@@ -23,13 +26,43 @@ const Main = () => {
   const [movie, setMovie] = useState("");
   const [time, setTime] = useState("");
   const [seating, setSeating] = useState(initialSeat)
+  const [error,setError]=useState("")
+  const [toast,setToast]=useState(false);
+
+
+
+  useEffect(() => {
+    const movieLocalData = window.localStorage.getItem("movieName");
+    const timeLocalData=window.localStorage.getItem("timeSlot");
+    const seatLocalData=window.localStorage.getItem("selectedSeat");
+    if( movieLocalData){
+        setMovie(JSON.parse(movieLocalData).movie)
+        setActive(JSON.parse(movieLocalData).index)
+    }
+    if(timeLocalData){
+      setTime(JSON.parse(timeLocalData).time)
+      setActiveTime(JSON.parse(timeLocalData).index)
+    }
+    if(seatLocalData){
+      setSeating(JSON.parse(seatLocalData).seat)
+      setActiveSeat(JSON.parse(seatLocalData).index)
+    }
+
+  }, []);
 
   const fetchData = async () => {
-    const datas = await axios.get("/api/booking")
-    const res = await datas.data
-    if (res) {
-      setLastData(res);
+    try{
+      const datas = await axios.get("/api/booking")
+
+      const res = await datas.data
+      if (res) {
+        setLastData(res);
+      }
     }
+    catch(err){
+      setError("not able to fetch data...")
+    }
+ 
   };
 
   useEffect(() => {
@@ -43,18 +76,25 @@ const Main = () => {
 
   const handleMovie = (e, index) => {
     setActive(index)
-    setMovie(e.target.innerText)
+    setMovie(e.target.innerText);
+    window.localStorage.setItem("movieName",JSON.stringify({movie:e.target.innerText,index:index}))
   }
 
   const handleTime = (e, index) => {
     setActiveTime(index)
     setTime(e.target.innerText)
+    window.localStorage.setItem("timeSlot",JSON.stringify({time:e.target.innerText,index:index}))
+  }
+
+  const handleSeat=(e,index)=>{
+   setActiveSeat(index);
+   window.localStorage.setItem("selectedSeat",JSON.stringify({seat:e.target.innerText,index:index}))
   }
 
   const handleSubmit = async () => {
     const { A1, A2, A3, A4, D1, D2 } = seating
     if (!movie) {
-      return alert("Please Select a movie");
+      return alert("Please Select a movie ");
     }
     if (!time) {
       return alert("Please Select a time slot");
@@ -65,12 +105,19 @@ const Main = () => {
     try {
       const data = await axios.post("/api/booking", { movie: movie, slot: time, seats: seating })
       setLastData(data);
-      alert("your show booked successfully ")
+      window.localStorage.setItem("movieticket",JSON.stringify({ movie: movie, slot: time, seats: seating}))
       await fetchData();
+      setToast(true);
+      setTimeout(()=>{
+        setToast(false)
+    },2000)
       setActive(null)
       setActiveSeat(null);
       setActiveTime(null);
       setSeating(initialSeat);
+      window.localStorage.clear();
+    
+      
     }
     catch (err) {
       return alert("sorry for inconvnience, Your ticked has not booked, please try again")
@@ -79,6 +126,9 @@ const Main = () => {
   return (
     <div className=' flex items-center justify-center'>
       <div className='border-2 border-solid mt-5 p-5 w-[90%] shadow-md rounded-md'>
+      {
+    toast && <Toast fn={()=>setToast(false)} toastClass={!toast ? "-translate-y-96": "translate-y-0"}/>
+  }
         <h1 className='font-bold text-xl text-teal-700'>Book that Show !!</h1>
 
         <div className='flex gap-4'>
@@ -99,7 +149,7 @@ const Main = () => {
             <div className='border-2 mt-2 border-solid rounded-md'>
               <h3 className='m-2 font-bold text-xl text-violet-500'>Select the Seats</h3>
 
-              <SeatBooking seating={seating} activeSeat={activeSeat} setActiveSeat={setActiveSeat} setSeating={setSeating}/>
+              <SeatBooking seating={seating} activeSeat={activeSeat} setActiveSeat={setActiveSeat} setSeating={setSeating} handleSeat={handleSeat} />
             </div>
 
             <div className='mt-2 font-bold'>
