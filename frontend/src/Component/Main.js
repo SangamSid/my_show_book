@@ -103,9 +103,11 @@ const Main = () => {
       return alert("Please Select Atleast one seat");
     }
     try {
-      const data = await axios.post("/api/booking", { movie: movie, slot: time, seats: seating })
+      const data = await axios.post("/api/booking",
+       { movie: movie, slot: time, seats: seating })
       setLastData(data);
-      window.localStorage.setItem("movieticket",JSON.stringify({ movie: movie, slot: time, seats: seating}))
+      window.localStorage.setItem("movieticket",
+      JSON.stringify({ movie: movie, slot: time, seats: seating}))
       await fetchData();
       setToast(true);
       setTimeout(()=>{
