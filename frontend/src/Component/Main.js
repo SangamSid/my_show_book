@@ -106,13 +106,7 @@ const Main = () => {
     }
     try {
       const data = await axios.post("https://my-show-backend.onrender.com/api/booking",
-       { movie: movie, slot: time, seats: seating },
-       {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true,
-      }
+       { movie: movie, slot: time, seats: seating }
        )
       setLastData(data);
       window.localStorage.setItem("movieticket",
