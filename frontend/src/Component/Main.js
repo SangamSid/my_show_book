@@ -35,6 +35,8 @@ const Main = () => {
     const movieLocalData = window.localStorage.getItem("movieName");
     const timeLocalData=window.localStorage.getItem("timeSlot");
     const seatLocalData=window.localStorage.getItem("selectedSeat");
+
+
     if( movieLocalData){
         setMovie(JSON.parse(movieLocalData).movie)
         setActive(JSON.parse(movieLocalData).index)
@@ -52,7 +54,9 @@ const Main = () => {
 
   const fetchData = async () => {
     try{
-      const datas = await axios.get("/api/booking")
+      const datas = await axios.get("/api/booking",{
+        withCredentials: true,
+      })
 
       const res = await datas.data
       if (res) {
@@ -103,8 +107,15 @@ const Main = () => {
       return alert("Please Select Atleast one seat");
     }
     try {
-      const data = await axios.post("/api/booking",
-       { movie: movie, slot: time, seats: seating })
+      const data = await axios.post("https://my-show-backend.onrender.com/api/booking",
+       { movie: movie, slot: time, seats: seating },
+       {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+      }
+       )
       setLastData(data);
       window.localStorage.setItem("movieticket",
       JSON.stringify({ movie: movie, slot: time, seats: seating}))
