@@ -44,6 +44,5 @@
   },
   "devDependencies": {
     "tailwindcss": "^3.3.5"
-  },
-  "proxy":"https://my-show-backend.onrender.com"
+  }
 }

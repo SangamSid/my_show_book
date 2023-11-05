@@ -54,9 +54,7 @@ const Main = () => {
 
   const fetchData = async () => {
     try{
-      const datas = await axios.get("/api/booking",{
-        withCredentials: true,
-      })
+      const datas = await axios.get("https://my-show-backend.onrender.com/api/booking")
 
       const res = await datas.data
       if (res) {
