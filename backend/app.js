@@ -4,11 +4,7 @@ const mongoose=require("mongoose")
 const router=require("./router")
 const cors = require('cors')
 require("dotenv").config()
-app.use(cors({
-    origin: "https://stunning-gnome-b41f39.netlify.app", // Replace with your Netlify domain
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
-  }))
+app.use(cors())
 app.use(express.json());
 app.use("/api",router)
 
