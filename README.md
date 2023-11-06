@@ -1,4 +1,4 @@
-# my_show_book
+# My_Show_Book
 
 This is a backend capston project given by almabetter in this project we created bookmyshow website this project have vary simple UI and this website is very easy to use ( userfriendly )  and also a work in any devices ( Responsiveness ) .
  
